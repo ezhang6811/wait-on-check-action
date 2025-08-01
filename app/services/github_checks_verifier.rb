@@ -50,6 +50,8 @@ class GithubChecksVerifier < ApplicationService
   def apply_filters(checks)
     checks.reject! { |check| [ignore_checks, workflow_name].flatten.include?(check.name) }
     log_checks(checks, 'Checks after ignore checks filter:')
+    checks.sort! { |a, b| b.started_at <=> a.started_at }
+    checks.uniq! { |check| check.name }
     checks.select! { |check| check.name == check_name } if check_name.present?
     log_checks(checks, 'Checks after check_name filter:')
     apply_regexp_filter(checks)
